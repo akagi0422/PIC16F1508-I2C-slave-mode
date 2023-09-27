@@ -117,6 +117,8 @@ void main()
     
     while(i < 2)
     {
+        
+        /* test sw part start*/
         if (PORTCbits.RC5 == 0)
         {
             __delay_ms(2000);
@@ -167,7 +169,9 @@ void main()
             else
                 i = 9;
         }
-        
+        /*test sw part over*/
+
+        /*I2C part start*/
         else if ((SSP1STATbits.S == 1) && (SSP1STATbits.D_nA == 0) && (SSP1STATbits.R_nW == 0) && (SSP1STATbits.BF == 1))          //MASTER ADD WRITE
         {
             SSP1CON2bits.ACKDT = 0;
@@ -181,7 +185,7 @@ void main()
             }
         }
         
-        else if ((SSP1STATbits.S == 1) && (SSP1STATbits.D_nA == 1) && (SSP1STATbits.R_nW == 0) && (SSP1STATbits.BF == 1))    // MASTER DATA WRITE can't in
+        else if ((SSP1STATbits.S == 1) && (SSP1STATbits.D_nA == 1) && (SSP1STATbits.R_nW == 0) && (SSP1STATbits.BF == 1))    // MASTER DATA WRITE
         {
             SSP1CON2bits.ACKDT = 0;
             while(SSP1IF == 1)
@@ -369,7 +373,9 @@ void main()
             }
         }
     }
-    
+    /*I2C part over*/
+
+    /*motor ctrl part & state check part start*/
     while(i == 2)
     {
         if(PORTCbits.RC3 == 0 && PORTCbits.RC4 == 1) //3close 4open
@@ -836,4 +842,5 @@ void main()
             i = 0;
         }
     }
+    /*motor ctrl part & state check part over*/
 }
