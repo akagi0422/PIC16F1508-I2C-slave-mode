@@ -39,6 +39,7 @@
 unsigned char rd_data[2] = 0;
 unsigned char temp;
 int i = 0;
+//int akagi = 0422;
 
 void main()
 {
@@ -101,6 +102,7 @@ void main()
     SSP1CON1bits.SSPM0=0;
     PIR1bits.SSP1IF = 0;
     i = 0;
+    SSP1STATbits.S = 0;
     
     LATAbits.LATA5=1;//light on
     LATAbits.LATA4=0;//light on
@@ -115,7 +117,58 @@ void main()
     
     while(i < 2)
     {
-        if ((SSP1STATbits.S == 1) && (SSP1STATbits.D_nA == 0) && (SSP1STATbits.R_nW == 0) && (SSP1STATbits.BF == 1))          //MASTER ADD WRITE
+        if (PORTCbits.RC5 == 0)
+        {
+            __delay_ms(2000);
+            if(PORTCbits.RC5 == 0)
+            {
+                if(PORTCbits.RC3 == 0 && PORTCbits.RC4 == 1)
+                {
+                   while(PORTCbits.RC4 != 0)
+                    {
+                        LATAbits.LATA5=0;//light on
+                        LATAbits.LATA4=0;//light on
+                        LATCbits.LATC6=1;
+                        LATCbits.LATC7=0;
+                    }
+                    i = 9;
+                }
+                else if(PORTCbits.RC3 == 1 && PORTCbits.RC4 == 0)
+                {
+                    while(PORTCbits.RC3 != 0)
+                    {
+                        LATAbits.LATA5=0;//light on
+                        LATAbits.LATA4=0;//light on
+                        LATCbits.LATC6=1;
+                        LATCbits.LATC7=0;
+                    }
+                    i = 9;
+                }
+               else if(PORTCbits.RC3 == 1 && PORTCbits.RC4 == 1)
+                {
+                    while(PORTCbits.RC3 == 1 && PORTCbits.RC4 == 1)
+                    {
+                        LATAbits.LATA5=0;//light on
+                        LATAbits.LATA4=0;//light on
+                        LATCbits.LATC6=1;
+                        LATCbits.LATC7=0;
+                    }
+                    i = 9;
+                }
+                else
+                {
+                    LATAbits.LATA5=1;//light off
+                    LATAbits.LATA4=1;//light off
+                    LATCbits.LATC6=0;
+                    LATCbits.LATC7=0;
+                    i = 9;
+                }
+            }
+            else
+                i = 9;
+        }
+        
+        else if ((SSP1STATbits.S == 1) && (SSP1STATbits.D_nA == 0) && (SSP1STATbits.R_nW == 0) && (SSP1STATbits.BF == 1))          //MASTER ADD WRITE
         {
             SSP1CON2bits.ACKDT = 0;
             while(SSP1IF == 1)
@@ -173,48 +226,48 @@ void main()
                 PIR1bits.SSP1IF = 0;
                 temp = SSP1BUF;
                 if(SSP1STATbits.BF == 0)
-                SSP1BUF = 0x89;
+                SSP1BUF = 0x8A;
                 if(SSP1STATbits.BF == 1)
                 SSP1CON1bits.CKP = 1;
                 
-                __delay_ms(1);
+                __delay_us(70);
                 
                 if(ACKSTAT == 0)
                 {
                     if(PIR1bits.SSP1IF == 1)
                     PIR1bits.SSP1IF = 0;
-                    SSP1BUF = 0x89;
+                    SSP1BUF = 0x8A;
                     if(SSP1STATbits.BF == 1)
                     SSP1CON1bits.CKP = 1;
                 }
                 else
-                    i = 9;
+                    i = 0;
                 
-                __delay_ms(1);
+                __delay_us(70);
                 
                 if(ACKSTAT == 0)
                 {
                     if(PIR1bits.SSP1IF == 1)
                     PIR1bits.SSP1IF = 0;
-                    SSP1BUF = 0x89;
+                    SSP1BUF = 0x8A;
                     if(SSP1STATbits.BF == 1)
                     SSP1CON1bits.CKP = 1;
                 }
                 else
-                    i = 9;
+                    i = 0;
                 
-                __delay_ms(1);
+                __delay_us(70);
                 
                 if(ACKSTAT == 0)
                 {
                     if(PIR1bits.SSP1IF == 1)
                     PIR1bits.SSP1IF = 0;
-                    SSP1BUF = 0x89;
+                    SSP1BUF = 0x8A;
                     if(SSP1STATbits.BF == 1)
                     SSP1CON1bits.CKP = 1;
                 }
                 else
-                    i = 9;
+                    i = 0;
             }
             else if(PORTCbits.RC3 == 1 && PORTCbits.RC4 == 0)
             {
@@ -222,48 +275,48 @@ void main()
                 PIR1bits.SSP1IF = 0;
                 temp = SSP1BUF;
                 if(SSP1STATbits.BF == 0)
-                SSP1BUF = 0x8A;
+                SSP1BUF = 0x89;
                 if(SSP1STATbits.BF == 1)
                 SSP1CON1bits.CKP = 1;
                 
-                __delay_ms(1);
+                __delay_us(70);
                 
                 if(ACKSTAT == 0)
                 {
                     if(PIR1bits.SSP1IF == 1)
                     PIR1bits.SSP1IF = 0;
-                    SSP1BUF = 0x8A;
+                    SSP1BUF = 0x89;
                     if(SSP1STATbits.BF == 1)
                     SSP1CON1bits.CKP = 1;
                 }
                 else
-                    i = 9;
+                    i = 0;
                 
-                __delay_ms(1);
+                __delay_us(70);
                 
                 if(ACKSTAT == 0)
                 {
                     if(PIR1bits.SSP1IF == 1)
                     PIR1bits.SSP1IF = 0;
-                    SSP1BUF = 0x8A;
+                    SSP1BUF = 0x89;
                     if(SSP1STATbits.BF == 1)
                     SSP1CON1bits.CKP = 1;
                 }
                 else
-                    i = 9;
+                    i = 0;
                 
-                __delay_ms(1);
+                __delay_us(70);
                 
                 if(ACKSTAT == 0)
                 {
                     if(PIR1bits.SSP1IF == 1)
                     PIR1bits.SSP1IF = 0;
-                    SSP1BUF = 0x8A;
+                    SSP1BUF = 0x89;
                     if(SSP1STATbits.BF == 1)
                     SSP1CON1bits.CKP = 1;
                 }
                 else
-                    i = 9;
+                    i = 0;
             }
             else if(PORTCbits.RC3 == 1 && PORTCbits.RC4 == 1)
             {
@@ -275,7 +328,7 @@ void main()
                 if(SSP1STATbits.BF == 1)
                 SSP1CON1bits.CKP = 1;
                 
-                __delay_ms(1);
+                __delay_us(70);
                 
                 if(ACKSTAT == 0)
                 {
@@ -286,22 +339,9 @@ void main()
                     SSP1CON1bits.CKP = 1;
                 }
                 else
-                    i = 9;
+                    i = 0;
                 
-                __delay_ms(1);
-                
-                if(ACKSTAT == 0)
-                {
-                    if(PIR1bits.SSP1IF == 1)
-                    PIR1bits.SSP1IF = 0;
-                    SSP1BUF = 0x8B;
-                    if(SSP1STATbits.BF == 1)
-                    SSP1CON1bits.CKP = 1;
-                }
-                else
-                    i = 9;
-                
-                __delay_ms(1);
+                __delay_us(70);
                 
                 if(ACKSTAT == 0)
                 {
@@ -312,7 +352,20 @@ void main()
                     SSP1CON1bits.CKP = 1;
                 }
                 else
-                    i = 9;
+                    i = 0;
+                
+                __delay_us(70);
+                
+                if(ACKSTAT == 0)
+                {
+                    if(PIR1bits.SSP1IF == 1)
+                    PIR1bits.SSP1IF = 0;
+                    SSP1BUF = 0x8B;
+                    if(SSP1STATbits.BF == 1)
+                    SSP1CON1bits.CKP = 1;
+                }
+                else
+                    i = 0;
             }
         }
     }
@@ -367,7 +420,7 @@ void main()
                             if(SSP1STATbits.BF == 1)
                             SSP1CON1bits.CKP = 1;
                             
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -380,7 +433,7 @@ void main()
                             else
                                 i = 0;
                 
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -393,7 +446,7 @@ void main()
                             else
                                 i = 0;
                             
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -416,7 +469,7 @@ void main()
                             if(SSP1STATbits.BF == 1)
                             SSP1CON1bits.CKP = 1;
                             
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -429,7 +482,7 @@ void main()
                             else
                                 i = 0;
                 
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -442,7 +495,7 @@ void main()
                             else
                                 i = 0;
                             
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -518,7 +571,7 @@ void main()
                             if(SSP1STATbits.BF == 1)
                             SSP1CON1bits.CKP = 1;
                             
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -531,7 +584,7 @@ void main()
                             else
                                 i = 0;
                 
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -544,7 +597,7 @@ void main()
                             else
                                 i = 0;
                             
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -567,7 +620,7 @@ void main()
                             if(SSP1STATbits.BF == 1)
                             SSP1CON1bits.CKP = 1;
                             
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -580,7 +633,7 @@ void main()
                             else
                                 i = 0;
                 
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -593,7 +646,7 @@ void main()
                             else
                                 i = 0;
                             
-                            __delay_ms(1);
+                            __delay_us(70);
                 
                             if(ACKSTAT == 0)
                             {
@@ -669,7 +722,45 @@ void main()
                             SSP1BUF = 0x8D;
                             if(SSP1STATbits.BF == 1)
                             SSP1CON1bits.CKP = 1;
-                            i = 0;
+                            
+                            __delay_us(70);
+                
+                            if(ACKSTAT == 0)
+                            {
+                                if(PIR1bits.SSP1IF == 1)
+                                PIR1bits.SSP1IF = 0;
+                                SSP1BUF = 0x8D;
+                                if(SSP1STATbits.BF == 1)
+                                SSP1CON1bits.CKP = 1;
+                            }
+                            else
+                                i = 0;
+                
+                            __delay_us(70);
+                
+                            if(ACKSTAT == 0)
+                            {
+                                if(PIR1bits.SSP1IF == 1)
+                                PIR1bits.SSP1IF = 0;
+                                SSP1BUF = 0x8D;
+                                if(SSP1STATbits.BF == 1)
+                                SSP1CON1bits.CKP = 1;
+                            }
+                            else
+                                i = 0;
+                            
+                            __delay_us(70);
+                
+                            if(ACKSTAT == 0)
+                            {
+                                if(PIR1bits.SSP1IF == 1)
+                                PIR1bits.SSP1IF = 0;
+                                SSP1BUF = 0x8D;
+                                if(SSP1STATbits.BF == 1)
+                                SSP1CON1bits.CKP = 1;
+                            }
+                            else
+                                i = 0;
                         }
                         else if(CM2CON0bits.C2OUT == 1)
                         {
@@ -680,7 +771,45 @@ void main()
                             SSP1BUF = 0x84;
                             if(SSP1STATbits.BF == 1)
                             SSP1CON1bits.CKP = 1;
-                            i = 0;
+                            
+                            __delay_us(70);
+                
+                            if(ACKSTAT == 0)
+                            {
+                                if(PIR1bits.SSP1IF == 1)
+                                PIR1bits.SSP1IF = 0;
+                                SSP1BUF = 0x84;
+                                if(SSP1STATbits.BF == 1)
+                                SSP1CON1bits.CKP = 1;
+                            }
+                            else
+                                i = 0;
+                
+                            __delay_us(70);
+                
+                            if(ACKSTAT == 0)
+                            {
+                                if(PIR1bits.SSP1IF == 1)
+                                PIR1bits.SSP1IF = 0;
+                                SSP1BUF = 0x84;
+                                if(SSP1STATbits.BF == 1)
+                                SSP1CON1bits.CKP = 1;
+                            }
+                            else
+                                i = 0;
+                            
+                            __delay_us(70);
+                
+                            if(ACKSTAT == 0)
+                            {
+                                if(PIR1bits.SSP1IF == 1)
+                                PIR1bits.SSP1IF = 0;
+                                SSP1BUF = 0x84;
+                                if(SSP1STATbits.BF == 1)
+                                SSP1CON1bits.CKP = 1;
+                            }
+                            else
+                                i = 0;
                         }
                     }
                     
